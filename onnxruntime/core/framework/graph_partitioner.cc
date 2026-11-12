@@ -953,7 +953,11 @@ static Status GetValidatedEpContextPath(const std::filesystem::path& ep_context_
     return ORT_MAKE_STATUS(ONNXRUNTIME, INVALID_ARGUMENT, "Both ep_context_path and model_path are empty.");
   }
 
-  if (std::filesystem::exists(context_cache_path) && error_if_output_file_exists) {
+  // Use the non-throwing overload: in a sandboxed compiler process (e.g. the WebNN Compiler process) the
+  // filesystem call is denied for the in-memory model path ("..._ctx.onnx"), and the throwing exists() would
+  // raise "Access is denied" and abort compilation. On any error, treat the output as not-existing and proceed.
+  std::error_code context_cache_exists_ec;
+  if (std::filesystem::exists(context_cache_path, context_cache_exists_ec) && error_if_output_file_exists) {
     return ORT_MAKE_STATUS(ONNXRUNTIME, FAIL, "Failed to generate EP context model since the file '",
                            context_cache_path, "' exists already. Please remove the EP context model if you want to re-generate it.");
   }
