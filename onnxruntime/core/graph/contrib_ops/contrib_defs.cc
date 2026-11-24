@@ -4318,7 +4318,9 @@ void RegisterContribSchemas() {
            "tensor(float16)",
            "tensor(float)",
            "tensor(double)",
-           "tensor(bfloat16)"},
+           "tensor(bfloat16)",
+           "tensor(int4)",
+           "tensor(uint4)"},
           "Constrain input and output types.");
 
   static const char* BitmaskDropout_ver1_doc = R"DOC(
